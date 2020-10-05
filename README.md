@@ -33,12 +33,10 @@ Practical speech recognition systems start by listening to a chunk of sound read
 
 There are two common methods used to how computers recognize speech:
 
-1.
 ### Statistical analysis
 
 ### Virtually all modern speech recognition systems also use a bit of complex statistical hocus-pocus to help figure out what&#39;s being said. The probability of one phone following another, the probability of bits of silence occurring in between phones, and the likelihood of different words following other words are all factored in. Ultimately, the system builds what&#39;s called a [hidden Markov model](https://en.wikipedia.org/wiki/Hidden_Markov_model) (HMM) of each speech segment, which is the computer&#39;s best guess at which beads are sitting on the string, based on all the things it&#39;s managed to glean from the sound spectrum and all the bits and pieces of phones and silence that it might reasonably contain.
 
-1.
 ### Artificial neural network
 
 ###  computer scientists developed &quot;connectionist&quot; computer models that could mimic how the brain learns to recognize patterns, which became known as [artificial neural networks](https://www.explainthatstuff.com/introduction-to-neural-networks.html) (sometimes called ANNs).
