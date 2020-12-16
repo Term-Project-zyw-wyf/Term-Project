@@ -1,0 +1,1 @@
+1.	Using Resemblyzer library to do speech detection, speech segmentation and embedding extraction. It means that using VAD to trim out the silences in the audio file and segment it out into windows and create d-vectors of these audio segments. Then clustering of d-vectors using spectral cluster library to label d-vectors.
