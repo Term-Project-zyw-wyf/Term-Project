@@ -1,40 +1,46 @@
-from google.cloud import speech_v1p1beta1 as speech
-import speech_recognition as sr
-import pyaudio
+from resemblyzer import preprocess_wav, VoiceEncoder
+from pathlib import Path
 
-client = speech.SpeechClient()
+from spectralcluster import SpectralClusterer
 
-speech_file = "test3.wav"
-with open(speech_file, 'rb') as audio_file:
-    content = audio_file.read()
+#give the file path to your audio file
+audio_file_path = 'test3.wav'
+wav_fpath = Path(audio_file_path)
 
-audio = speech.RecognitionAudio(content=content)
+wav = preprocess_wav(wav_fpath)
+encoder = VoiceEncoder("cpu")
+_, cont_embeds, wav_splits = encoder.embed_utterance(wav, return_partials=True, rate=16)
+print(cont_embeds.shape)
 
 
 
-config = speech.RecognitionConfig(
-    encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-    language_code='en-US',
-    enable_speaker_diarization=True,
-    diarization_speaker_count=4)
+clusterer = SpectralClusterer(
+    min_clusters=2,
+    max_clusters=100,
+    p_percentile=0.90,
+    gaussian_blur_sigma=1)
 
-print('Waiting for operation to complete...')
-response = client.recognize(config=config, audio=audio)
-# The transcript within each result is separate and sequential per result.
-# However, the words list within an alternative includes all the words
-# from all the results thus far. Thus, to get all the words with speaker
-# tags, you only have to take the words list from the last result:
-result = response.results[-1]
+labels = clusterer.predict(cont_embeds)
+print(labels)
 
-words_info = result.alternatives[0].words
+def create_labelling(labels, wav_splits):
+    from resemblyzer import sampling_rate
+    times = [((s.start + s.stop) / 2) / 16 for s in wav_splits]
+    labelling = []
+    start_time = 0
 
-# Printing out the output:
-speaker_tag = 0
-for word_info in words_info:
-    if speaker_tag == word_info.speaker_tag:
-        print(word_info.word, end=" ")
-    else:
-        print("\n")
-        print(word_info.speaker_tag)
-        print(word_info.word, end=" ")
-    speaker_tag = word_info.speaker_tag
+    for i, time in enumerate(times):
+        if i > 0 and labels[i] != labels[i - 1]:
+            temp = [str(labels[i - 1]), start_time, time]
+            labelling.append(tuple(temp))
+            start_time = time
+        if i == len(times) - 1:
+            temp = [str(labels[i]), start_time, time]
+            labelling.append(tuple(temp))
+
+    return labelling
+
+
+labelling = create_labelling(labels, wav_splits)
+
+print(labelling)
