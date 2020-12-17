@@ -1,1 +1,2 @@
 we use google API to do diarization and transcription. The result of google api is much more accurate than last one. It will distinct two speaker in the conversation. The video representation is under google-api script folder.
+Otherwise, we write a script called term_project to pretreat the audio file. It will split long audio file into some short ones and In the main script, we pretreat the audio file input with their frequency and number of channel to make sure the predicition of google api is more accurate.
