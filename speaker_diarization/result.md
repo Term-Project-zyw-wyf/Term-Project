@@ -1,0 +1,1 @@
+1.	The result of the method which combine resemblyzer and spectralcluster library is not good enough. In this sample, we give a audio file which has two people taking to each other, however the result give us six labels which means it identify six speakers in this audio file. Capture1 shows the picture on the output of script.
